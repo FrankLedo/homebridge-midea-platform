@@ -980,10 +980,19 @@ export default class AirConditionerAccessory extends BaseAccessory<MideaACDevice
     await this.device.set_rate_select(value as number);
   }
 
+  /**
+   * Mirrors a 0-100 slat position when `swing.angleInverted` is set, for units whose
+   * slat travel runs opposite to HomeKit's open/closed sense. Self-inverse, so the same
+   * call is used on the way in and on the way out.
+   */
+  private applySwingAngleInversion(position: number): number {
+    return this.configDev.AC_options.swing.angleInverted ? 100 - position : position;
+  }
+
   getSwingAngleCurrentPosition(): CharacteristicValue {
     const value = this.swingAngleMainControl === SwingAngle.VERTICAL ? this.device.attributes.WIND_SWING_UD_ANGLE : this.device.attributes.WIND_SWING_LR_ANGLE;
 
-    return value === 1 ? 0 : value;
+    return this.applySwingAngleInversion(value === 1 ? 0 : value);
   }
 
   getSwingAngleTargetPosition(): CharacteristicValue {
@@ -991,7 +1000,7 @@ export default class AirConditionerAccessory extends BaseAccessory<MideaACDevice
   }
 
   async setSwingAngleTargetPosition(value: CharacteristicValue) {
-    const requested = value as number;
+    const requested = this.applySwingAngleInversion(value as number);
     const position = SWING_ANGLE_POSITIONS.reduce((nearest, candidate) =>
       Math.abs(candidate - requested) < Math.abs(nearest - requested) ? candidate : nearest,
     );
@@ -1000,7 +1009,7 @@ export default class AirConditionerAccessory extends BaseAccessory<MideaACDevice
 
     // Reflect the snapped position so the control settles there rather than on the
     // value the user released the slider at.
-    const reported = position === 1 ? 0 : position;
+    const reported = this.applySwingAngleInversion(position === 1 ? 0 : position);
     this.swingAngleService?.updateCharacteristic(this.platform.Characteristic.TargetPosition, reported);
     this.swingAngleService?.updateCharacteristic(this.platform.Characteristic.CurrentPosition, reported);
   }

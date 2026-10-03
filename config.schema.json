@@ -253,6 +253,11 @@
                       "description": "Toggles if a switch, which can turn the display on or off will be created or not.",
                       "type": "boolean"
                     },
+                    "angleInverted": {
+                      "title": "Invert Swing Angle",
+                      "description": "Mirrors the swing angle accessory, for units whose slat travel runs opposite to HomeKit\u2019s open/closed sense.",
+                      "type": "boolean"
+                    },
                     "command": {
                       "title": "Display Switch Alternate Command",
                       "description": "Use this if the switch display command does not work. If it doesn't work either way then you unit does not support this feature.",

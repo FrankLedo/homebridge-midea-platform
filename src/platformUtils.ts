@@ -78,6 +78,7 @@ type ACOptions = {
     mode: SwingMode;
     angleAccessory: boolean;
     angleMainControl: SwingAngle;
+    angleInverted: boolean;
   };
   heatingCapable: boolean;
   ecoSwitch: boolean;
@@ -208,6 +209,7 @@ export const defaultDeviceConfig: DeviceConfig = {
       mode: SwingMode.NONE,
       angleAccessory: false,
       angleMainControl: SwingAngle.VERTICAL,
+      angleInverted: false,
     },
     heatingCapable: true,
     outDoorTemp: false,

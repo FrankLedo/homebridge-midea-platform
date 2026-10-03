@@ -19,7 +19,8 @@ Providing air conditioner settings is optional and the whole section or individu
     "swing": {
         "mode": "None",
         "angleAccessory": false,
-        "angleMainControl": "Vertical"
+        "angleMainControl": "Vertical",
+        "angleInverted": false
     },
     "heatingCapable": true,
     "outDoorTemp": false,
@@ -54,6 +55,7 @@ Providing air conditioner settings is optional and the whole section or individu
   - **mode** _(optional)_: Set swing mode of the unit. If your unit does not support this feature then leave it on `None`. Default is `None`.
   - **angleAccessory** _(optional)_: Toggles if the swing angle accessory is created with the accessory. The accessory can be used to set the angle of the slat to a specified value. The `mode` property will be used to determine the direction of the slat. The main position bar will be used to set the angle of the direction which is selected in the `mode` property. Default is `false`.
   - **angleMainControl** _(optional)_: If `mode` property is Both and the swing angle accessory is enabled, this property will be used to determine which direction will be controlled by the main position bar of the accessory. Default is `Vertical`.
+  - **angleInverted** _(optional)_: Mirrors the swing angle accessory, for units whose slat travel runs opposite to HomeKit’s open/closed sense. Default is `false`.
 - **heatingCapable** _(optional)_: Toggles if the unit is capable of heating. Default is `true`.
 - **outDoorTemp** _(optional)_: Toggles if the outdoor temperature sensor is created with the accessory. Default is `false`.
 - **audioFeedback** _(optional)_: Toggles if the unit beeps when a command is sent, default is false.

@@ -50,6 +50,7 @@ export interface ACAttributes extends DeviceAttributeBase {
   NATURAL_WIND: boolean;
   TEMP_FAHRENHEIT: boolean;
   SCREEN_DISPLAY: boolean | undefined;
+  SOUND: boolean | undefined;
   SCREEN_DISPLAY_ALTERNATE: boolean;
   FULL_DUST: boolean;
   INDOOR_TEMPERATURE?: number;
@@ -145,6 +146,7 @@ export default class MideaACDevice extends MideaDevice {
       NATURAL_WIND: false,
       TEMP_FAHRENHEIT: false,
       SCREEN_DISPLAY: undefined, // invalid
+      SOUND: undefined, // invalid
       SCREEN_DISPLAY_ALTERNATE: false,
       FULL_DUST: false,
       INDOOR_TEMPERATURE: undefined, // invalid
@@ -350,6 +352,10 @@ export default class MideaACDevice extends MideaDevice {
             } else {
               messageToSend.SWITCH_DISPLAY ??= new MessageSwitchDisplay(this.device_protocol_version);
             }
+          } else if (k === 'SOUND') {
+            messageToSend.NEW_PROTOCOL ??= new MessageNewProtocolSet(this.device_protocol_version);
+            messageToSend.NEW_PROTOCOL.sound = !!v;
+            messageToSend.NEW_PROTOCOL.prompt_tone = this.attributes.PROMPT_TONE;
           } else if (['INDIRECT_WIND', 'BREEZELESS'].includes(k)) {
             messageToSend.NEW_PROTOCOL ??= new MessageNewProtocolSet(this.device_protocol_version);
             messageToSend.NEW_PROTOCOL[k.toLowerCase()] = !!v;

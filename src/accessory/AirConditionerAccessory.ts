@@ -20,6 +20,7 @@ const displaySubtype = 'display';
 const fanOnlySubtype = 'fanOnly';
 const fanSubtype = 'fan';
 const fanAutoSubtype = 'fanAuto';
+const soundSubtype = 'sound';
 const ecoModeSubtype = 'ecoMode';
 const breezeAwaySubtype = 'breezeAway';
 const dryModeSubtype = 'dryMode';
@@ -44,6 +45,7 @@ export default class AirConditionerAccessory extends BaseAccessory<MideaACDevice
   private fanOnlyService?: Service;
   private fanService?: Service;
   private fanAutoService?: Service;
+  private soundService?: Service;
   private ecoModeService?: Service;
   private breezeAwayService?: Service;
   private dryModeService?: Service;
@@ -232,6 +234,16 @@ export default class AirConditionerAccessory extends BaseAccessory<MideaACDevice
       this.fanAutoService.getCharacteristic(this.platform.Characteristic.On).onGet(this.getFanState.bind(this)).onSet(this.setFanAuto.bind(this));
     } else if (this.fanAutoService) {
       this.accessory.removeService(this.fanAutoService);
+    }
+
+    // Sound switch
+    this.soundService = this.accessory.getServiceById(this.platform.Service.Switch, soundSubtype);
+    if (this.configDev.AC_options.soundSwitch) {
+      this.soundService ??= this.accessory.addService(this.platform.Service.Switch, undefined, soundSubtype);
+      this.handleConfiguredName(this.soundService, soundSubtype, 'Sound');
+      this.soundService.getCharacteristic(this.platform.Characteristic.On).onGet(this.getSound.bind(this)).onSet(this.setSound.bind(this));
+    } else if (this.soundService) {
+      this.accessory.removeService(this.soundService);
     }
 
     // Display switch
@@ -512,6 +524,9 @@ export default class AirConditionerAccessory extends BaseAccessory<MideaACDevice
           break;
         case 'mode':
           updateState = true;
+          break;
+        case 'sound':
+          this.soundService?.updateCharacteristic(this.platform.Characteristic.On, this.getSound());
           break;
         case 'eco_mode':
           this.ecoModeService?.updateCharacteristic(this.platform.Characteristic.On, this.getEcoMode());
@@ -794,6 +809,14 @@ export default class AirConditionerAccessory extends BaseAccessory<MideaACDevice
 
   async setFanAuto(value: CharacteristicValue) {
     await this.device.set_fan_auto(value === true);
+  }
+
+  getSound(): CharacteristicValue {
+    return this.device.attributes.SOUND ?? false;
+  }
+
+  async setSound(value: CharacteristicValue) {
+    await this.device.set_attribute({ SOUND: value as boolean });
   }
 
   setHeatingCoolingTemperatureThresholds(thresholds: { heating?: number; cooling?: number }) {
